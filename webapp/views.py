@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from .forms import *
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+
+from .models import *
 
 def home(request):
     return render(request, 'webapp/index.html')
@@ -27,10 +30,15 @@ def my_login(request):
 
         if user is not None:
             auth.login(request, user)
-            return redirect('/')
+            return redirect('/dashboard')
 
     return render(request, 'webapp/my-login.html', {'form':form})
 
 def user_logout(request):
     auth.logout(request)
     return redirect("my-login")
+
+@login_required(login_url='my-login')
+def dashboard(request):
+    my_records = Record.objects.all()
+    return render(request, 'webapp/dashboard.html', {'records': my_records})
