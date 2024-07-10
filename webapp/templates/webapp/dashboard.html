@@ -7,7 +7,7 @@
 
     <hr>
 
-    <a class="btn btn-outline-primary btn-sm" href="{% url 'dashboard' %}"> 
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'create-record' %}"> 
 	Create a new record
     </a>
 
@@ -42,8 +42,8 @@
 	    	<td> {{ record.city }} </td>
 	    	<td> {{ record.province }} </td>
 	    	<td> {{ record.country }} </td>
-		<td> {{ record.creation_date }} </td>
-
+			<td> {{ record.creation_date }} </td>
+			<td> <a href="{% url 'record' record.id %}"> View </a> </td>
 	    </tr>
 	    {% endfor %}
 	{% endif %}

@@ -42,3 +42,32 @@ def user_logout(request):
 def dashboard(request):
     my_records = Record.objects.all()
     return render(request, 'webapp/dashboard.html', {'records': my_records})
+
+@login_required(login_url='my-login')
+def create_record(request):
+    form = CreateRecordForm()
+    if request.method == "POST":
+        form = CreateRecordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/dashboard')
+    
+    return render(request, 'webapp/create-record.html', {'form':form})
+
+@login_required(login_url='my-login')
+def update_record(request, pk):
+    record = Record.objects.get(id=pk)
+    form = UpdateRecordForm(instance=record)
+    if request.method == "POST":
+        form = UpdateRecordForm(request.POST, instance=record)
+        if form.is_valid():
+            form.save()
+            return redirect('/dashboard')
+    
+    return render(request, 'webapp/update-record.html', {'form':form})
+
+@login_required(login_url='my-login')
+def view_record(request, pk):
+    all_records = Record.objects.get(id=pk)
+    
+    return render(request, 'webapp/view-record.html', {'record':all_records})
