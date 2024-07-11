@@ -5,6 +5,7 @@ from .forms import *
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import *
 
@@ -17,6 +18,7 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Account created successfully!")
             return redirect('/my-login')
     
     return render(request, 'webapp/register.html', {'form':form})
@@ -30,12 +32,14 @@ def my_login(request):
 
         if user is not None:
             auth.login(request, user)
+            messages.info(request, "Logged in successfully!")
             return redirect('/dashboard')
 
     return render(request, 'webapp/my-login.html', {'form':form})
 
 def user_logout(request):
     auth.logout(request)
+    messages.info(request, "Logged out successfully!")
     return redirect("my-login")
 
 @login_required(login_url='my-login')
@@ -50,6 +54,7 @@ def create_record(request):
         form = CreateRecordForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Record created successfully!")
             return redirect('/dashboard')
     
     return render(request, 'webapp/create-record.html', {'form':form})
@@ -62,6 +67,7 @@ def update_record(request, pk):
         form = UpdateRecordForm(request.POST, instance=record)
         if form.is_valid():
             form.save()
+            messages.info(request, "Record updated successfully!")
             return redirect('/dashboard')
     
     return render(request, 'webapp/update-record.html', {'form':form})
@@ -71,3 +77,11 @@ def view_record(request, pk):
     all_records = Record.objects.get(id=pk)
     
     return render(request, 'webapp/view-record.html', {'record':all_records})
+
+@login_required(login_url='my-login')
+def delete_record(request, pk):
+    record = Record.objects.get(id=pk)
+    record.delete()
+    messages.error(request, "Record deleted successfully!")
+    
+    return redirect("dashboard")
